@@ -15,7 +15,7 @@
             <TextBox x:Name="txtPauseThresold" Height="23" Margin="0,152,20.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="60" FontSize="15" TextAlignment="Right" HorizontalAlignment="Right" Width="77" KeyDown="txtPauseThresold_KeyDown"/>
             <Button x:Name="btnDefault" Content="Default" HorizontalAlignment="Right" Margin="0,323,15.5,0" Width="74" Click="btnDefault_Click" Height="24" VerticalAlignment="Top"/>
             <CheckBox x:Name="chkNoClick" Content="No clicks, move cursor only" HorizontalAlignment="Left" Margin="260,295,0,0" Height="16" VerticalAlignment="Top" Checked="chkNoClick_Checked" Unchecked="chkNoClick_Unchecked"/>
-            <RadioButton x:Name="rdiGrab" Content="Grab Gesture" HorizontalAlignment="Left" Margin="18,297,0,0" VerticalAlignment="Top" GroupName="GestureMode" Checked="rdiGrab_Checked"/>
+            <RadioButton x:Name="rdiGrip" Content="Grip Gesture" HorizontalAlignment="Left" Margin="18,297,0,0" VerticalAlignment="Top" GroupName="GestureMode" Checked="rdiGrip_Checked"/>
             <RadioButton x:Name="rdiPause" Content="Pause To Click" HorizontalAlignment="Left" Margin="134,297,0,0" VerticalAlignment="Top" GroupName="GestureMode" Checked="rdiPause_Checked"/>
             <Slider x:Name="CursorSmoothing" Margin="10,253,9.5,0" VerticalAlignment="Top" Height="26" Maximum="0.95" SmallChange="0.01" Value="0.2" ValueChanged="CursorSmoothing_ValueChanged"/>
             <Label Content="Cursor Smoothing" Margin="10,223,117.5,0" VerticalAlignment="Top"/>

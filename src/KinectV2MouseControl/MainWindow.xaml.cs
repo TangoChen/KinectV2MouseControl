@@ -69,9 +69,9 @@ namespace KinectV2MouseControl
             PauseThresold.Value = Properties.Settings.Default.PauseThresold;
             chkNoClick.IsChecked = !Properties.Settings.Default.DoClick;
             CursorSmoothing.Value = Properties.Settings.Default.CursorSmoothing;
-            if (Properties.Settings.Default.GrabGesture)
+            if (Properties.Settings.Default.GripGesture)
             {
-                rdiGrab.IsChecked = true;
+                rdiGrip.IsChecked = true;
             }
             else
             {
@@ -113,7 +113,7 @@ namespace KinectV2MouseControl
             CursorSmoothing.Value = KinectControl.CURSOR_SMOOTHING;
 
             chkNoClick.IsChecked = !KinectControl.DO_CLICK;
-            rdiGrab.IsChecked = KinectControl.USE_GRAB_GESTURE;
+            rdiGrip.IsChecked = KinectControl.USE_GRIP_GESTURE;
         }
 
         private void chkNoClick_Checked(object sender, RoutedEventArgs e)
@@ -139,21 +139,21 @@ namespace KinectV2MouseControl
             kinectCtrl.Close();
         }
 
-        public void rdiGrabGestureChange()
+        public void rdiGripGestureChange()
         {
-            kinectCtrl.useGrabGesture = rdiGrab.IsChecked.Value;
-            Properties.Settings.Default.GrabGesture = kinectCtrl.useGrabGesture;
+            kinectCtrl.useGripGesture = rdiGrip.IsChecked.Value;
+            Properties.Settings.Default.GripGesture = kinectCtrl.useGripGesture;
             Properties.Settings.Default.Save();
         }
 
-        private void rdiGrab_Checked(object sender, RoutedEventArgs e)
+        private void rdiGrip_Checked(object sender, RoutedEventArgs e)
         {
-            rdiGrabGestureChange();
+            rdiGripGestureChange();
         }
 
         private void rdiPause_Checked(object sender, RoutedEventArgs e)
         {
-            rdiGrabGestureChange();
+            rdiGripGestureChange();
         }
 
         private void CursorSmoothing_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

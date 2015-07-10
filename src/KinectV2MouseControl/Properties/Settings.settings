@@ -5,7 +5,7 @@
     <Setting Name="CursorSmoothing" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0.2</Value>
     </Setting>
-    <Setting Name="GrabGesture" Type="System.Boolean" Scope="User">
+    <Setting Name="GripGesture" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MouseSensitivity" Type="System.Single" Scope="User">

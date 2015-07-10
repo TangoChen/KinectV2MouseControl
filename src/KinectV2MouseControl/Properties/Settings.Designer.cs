@@ -38,12 +38,12 @@ namespace KinectV2MouseControl.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool GrabGesture {
+        public bool GripGesture {
             get {
-                return ((bool)(this["GrabGesture"]));
+                return ((bool)(this["GripGesture"]));
             }
             set {
-                this["GrabGesture"] = value;
+                this["GripGesture"] = value;
             }
         }
         

@@ -8,5 +8,5 @@ A mouse control application for Kinect v2, including a couple of options for var
 * Pause-To-Click Time Required
 * Pause Movement Thresold
 * Cursor Smoothing
-* Grab Gesture / Pause To Click
+* Grip Gesture / Pause To Click
 * No clicks, move cursor only

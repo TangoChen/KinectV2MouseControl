@@ -48,9 +48,9 @@ namespace KinectV2MouseControl
         /// </summary>
         public bool doClick = DO_CLICK;
         /// <summary>
-        /// Use grab gesture to click or not
+        /// Use Grip gesture to click or not
         /// </summary>
-        public bool useGrabGesture = USE_GRAB_GESTURE;
+        public bool useGripGesture = USE_GRIP_GESTURE;
         /// <summary>
         /// Value 0 - 0.95f, the larger it is, the smoother the cursor would move
         /// </summary>
@@ -61,7 +61,7 @@ namespace KinectV2MouseControl
         public const float TIME_REQUIRED = 2f;
         public const float PAUSE_THRESOLD = 60f;
         public const bool DO_CLICK = true;
-        public const bool USE_GRAB_GESTURE = true;
+        public const bool USE_GRIP_GESTURE = true;
         public const float CURSOR_SMOOTHING = 0.2f;
 
         /// <summary>
@@ -80,13 +80,13 @@ namespace KinectV2MouseControl
         Point lastCurPos = new Point(0, 0);
 
         /// <summary>
-        /// If true, user did a left hand grab gesture
+        /// If true, user did a left hand Grip gesture
         /// </summary>
-        bool wasLeftGrab = false;
+        bool wasLeftGrip = false;
         /// <summary>
-        /// If true, user did a right hand grab gesture
+        /// If true, user did a right hand Grip gesture
         /// </summary>
-        bool wasRightGrab = false;
+        bool wasRightGrip = false;
 
         public KinectControl()
         {
@@ -118,7 +118,7 @@ namespace KinectV2MouseControl
         /// <param name="e"></param>
         void Timer_Tick(object sender, EventArgs e)
         {
-            if (!doClick || useGrabGesture) return;
+            if (!doClick || useGripGesture) return;
 
             if (!alreadyTrackedPos) {
                 timeCount = 0;
@@ -206,23 +206,23 @@ namespace KinectV2MouseControl
                         
                         alreadyTrackedPos = true;
 
-                        // grab gesture
-                        if (doClick && useGrabGesture)
+                        // Grip gesture
+                        if (doClick && useGripGesture)
                         {
                             if (body.HandRightState == HandState.Closed)
                             {
-                                if (!wasRightGrab)
+                                if (!wasRightGrip)
                                 {
                                     MouseControl.MouseLeftDown();
-                                    wasRightGrab = true;
+                                    wasRightGrip = true;
                                 }
                             }
                             else if (body.HandRightState == HandState.Open)
                             {
-                                if (wasRightGrab)
+                                if (wasRightGrip)
                                 {
                                     MouseControl.MouseLeftUp();
-                                    wasRightGrab = false;
+                                    wasRightGrip = false;
                                 }
                             }
                         }
@@ -236,30 +236,30 @@ namespace KinectV2MouseControl
                         MouseControl.SetCursorPos((int)(curPos.X + (x * mouseSensitivity * screenWidth - curPos.X) * smoothing), (int)(curPos.Y + ((y + 0.25f) * mouseSensitivity * screenHeight - curPos.Y) * smoothing));
                         alreadyTrackedPos = true;
 
-                        if (doClick && useGrabGesture)
+                        if (doClick && useGripGesture)
                         {
                             if (body.HandLeftState == HandState.Closed)
                             {
-                                if (!wasLeftGrab)
+                                if (!wasLeftGrip)
                                 {
                                     MouseControl.MouseLeftDown();
-                                    wasLeftGrab = true;
+                                    wasLeftGrip = true;
                                 }
                             }
                             else if (body.HandLeftState == HandState.Open)
                             {
-                                if (wasLeftGrab)
+                                if (wasLeftGrip)
                                 {
                                     MouseControl.MouseLeftUp();
-                                    wasLeftGrab = false;
+                                    wasLeftGrip = false;
                                 }
                             }
                         }
                     }
                     else
                     {
-                        wasLeftGrab = true;
-                        wasRightGrab = true;
+                        wasLeftGrip = true;
+                        wasRightGrip = true;
                         alreadyTrackedPos = false;
                     }
 
