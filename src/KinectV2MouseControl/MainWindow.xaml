@@ -1,0 +1,28 @@
+﻿<Window x:Class="KinectV2MouseControl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Kinect v2 Mouse Control" Height="392.197" Width="458.276" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <Grid>
+        <Grid KeyDown="txtMouseSensitivity_KeyDown" Margin="0,0,0.5,-0.5">
+            <Slider x:Name="MouseSensitivity" Margin="10,40,9.5,0" VerticalAlignment="Top" Height="26" Maximum="6" ValueChanged="MouseSensitivity_ValueChanged" Minimum="1" Value="3.5"/>
+            <Label Content="Mouse Sensitivity" Margin="10,10,117.5,0" VerticalAlignment="Top"/>
+            <Slider x:Name="PauseToClickTime" Margin="10,111,9.5,0" VerticalAlignment="Top" Height="26" Maximum="5" SmallChange="0.01" Value="2" ValueChanged="PauseToClickTime_ValueChanged" Minimum="0.3"/>
+            <Label Content="Pause-To-Click Time Required" Margin="10,81,117.5,0" VerticalAlignment="Top"/>
+            <TextBox x:Name="txtTimeRequired" Height="23" Margin="0,81,20.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="2" FontSize="15" TextAlignment="Right" HorizontalAlignment="Right" Width="77" KeyDown="txtTimeRequired_KeyDown"/>
+            <TextBox x:Name="txtMouseSensitivity" Height="23" Margin="0,12,20.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="3.5" FontSize="15" TextAlignment="Right" HorizontalAlignment="Right" Width="77"/>
+            <Slider x:Name="PauseThresold" Margin="10,182,9.5,0" VerticalAlignment="Top" Height="26" Maximum="160" SmallChange="0.01" Value="60" ValueChanged="PauseThresold_ValueChanged" Minimum="10"/>
+            <Label Content="Pause Movement Thresold" Margin="10,152,117.5,0" VerticalAlignment="Top"/>
+            <TextBox x:Name="txtPauseThresold" Height="23" Margin="0,152,20.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="60" FontSize="15" TextAlignment="Right" HorizontalAlignment="Right" Width="77" KeyDown="txtPauseThresold_KeyDown"/>
+            <Button x:Name="btnDefault" Content="Default" HorizontalAlignment="Right" Margin="0,323,15.5,0" Width="74" Click="btnDefault_Click" Height="24" VerticalAlignment="Top"/>
+            <CheckBox x:Name="chkNoClick" Content="No clicks, move cursor only" HorizontalAlignment="Left" Margin="260,295,0,0" Height="16" VerticalAlignment="Top" Checked="chkNoClick_Checked" Unchecked="chkNoClick_Unchecked"/>
+            <RadioButton x:Name="rdiGrab" Content="Grab Gesture" HorizontalAlignment="Left" Margin="18,297,0,0" VerticalAlignment="Top" GroupName="GestureMode" Checked="rdiGrab_Checked"/>
+            <RadioButton x:Name="rdiPause" Content="Pause To Click" HorizontalAlignment="Left" Margin="134,297,0,0" VerticalAlignment="Top" GroupName="GestureMode" Checked="rdiPause_Checked"/>
+            <Slider x:Name="CursorSmoothing" Margin="10,253,9.5,0" VerticalAlignment="Top" Height="26" Maximum="0.95" SmallChange="0.01" Value="0.2" ValueChanged="CursorSmoothing_ValueChanged"/>
+            <Label Content="Cursor Smoothing" Margin="10,223,117.5,0" VerticalAlignment="Top"/>
+            <TextBox x:Name="txtCursorSmoothing" Height="23" Margin="0,223,20.5,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="0.2" FontSize="15" TextAlignment="Right" HorizontalAlignment="Right" Width="77" KeyDown="txtPauseThresold_KeyDown"/>
+            <Label Content="Developed by Jingzhou Chen  (http://TangoChen.com)" HorizontalAlignment="Left" Margin="10,323,0,0" VerticalAlignment="Top"/>
+
+        </Grid>
+
+    </Grid>
+</Window>
