@@ -1,0 +1,18 @@
+﻿<UserControl x:Name="ControlSelf"
+             x:Class="KinectV2MouseControl.ParameterControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="70" d:DesignWidth="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3.5*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Label Content="{Binding ElementName=ControlSelf, Path=Description}" Margin="12,11,6,0" Height="24" VerticalAlignment="Top"/>
+        <Slider x:Name="ValueSlider" Value="{Binding ElementName=ControlSelf, Path=Value, Mode=TwoWay}" Margin="30,40,12,0" Grid.ColumnSpan="2" Height="19" VerticalAlignment="Top" Maximum="{Binding ElementName=ControlSelf, Path=Maximum}" Minimum="{Binding ElementName=ControlSelf, Path=Minimum}" SmallChange="{Binding ElementName=ControlSelf, Path=SmallChange}"/>
+        <TextBox x:Name="ValueText" Margin="6,12,12,0" FontSize="15" TextAlignment="Right" Text="{Binding Value, ElementName=ValueSlider, Mode=TwoWay, StringFormat=\{0:0.##\}, UpdateSourceTrigger=PropertyChanged}" Height="22" VerticalAlignment="Top" HorizontalContentAlignment="Right" Grid.Column="1" VerticalContentAlignment="Stretch"/>
+    </Grid>
+</UserControl>

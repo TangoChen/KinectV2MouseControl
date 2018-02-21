@@ -1,12 +1,47 @@
-#Kinect v2 Mouse Control
+## Kinect v2 Mouse Control
 
-A mouse control application for Kinect v2, including a couple of options for various uses.
+##### Updates:
+  * ***v1.1***  
+  	Feb 21th, 2018: An update after 3 years since first created. On usages and the looking, the app doesn't seem very different. Features are nearly just the same, but with a big structure change on the code side using MVVM pattern.  
+    A small improvement on feature is, the cursor will keep following first tracked (lifting-forward) hand regardless of another hand lifting afterwards. Previously, it was set to only follow right hand when both hand are tracked.
+---
+### Features
 
-## Options
+#### Control mode
+* Disabled
+* MoveOnly
+* GripToPress
+* HoverToClick
 
-* Mouse Sensitivity
-* Pause-To-Click Time Required
-* Pause Movement Thresold
-* Cursor Smoothing
-* Grip Gesture / Pause To Click
-* No clicks, move cursor only
+#### Adjustable parameters
+* Movement scale
+* Cursor smoothing
+* Hover-to-click range
+* Hover-to-click duration
+---
+Some more descriptions what some classes do:
+#### KinectReader.cs
+* Turns on/off Kinect sensor.
+* Reads data from sensor.
+* Raises OnTrackedBody, OnLostTracking events.
+#### CursorMapper.cs
+* Maps positions from input rect to output rect. Specifically in this case:
+  * Input rect: Hand gesture moving area.
+  * Output rect: Screen area.
+* Gets position for smoothed cursor movement.
+* Scale alignment available for deciding how movements are scaled from input to output rect with an adjusted proportion. So as to make desired and suitable cursor movements on specific area sizes. There's no visual settings on the current app. And it's set to LongerRange by default in code.
+
+	e.g. If hand gesture moving area is (0, 0, 100, 100), screen area is (0, 0, 800, 600).
+    
+  * **None.** Scale: (1, 1)
+  * **Both.** Scale: (8, 6)
+  * **Horizontal.** Scale: (8, 8)
+  * **Vertical.** Scale: (6, 6)
+  * **ShorterRange.** Scale: (6, 6)
+  * **LongerRange.** Scale: (8, 8)
+
+
+#### MapperStructs.cs:
+***MRect*** and ***MVector2*** included in **MapperStructs.cs** are custom Rect and Vector2 struct with an 'M' in the front just to make it more distinguishable from possibly existing namesake structs.
+
+***MRect*** has DeltaX, DeltaY, Width, Height, Center properties that can be used for calculating scale and offset for mapping.

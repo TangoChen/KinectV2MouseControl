@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>KinectV2MouseControl.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Kinect, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -54,7 +57,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Compile Include="ViewModels\KinectCursorViewModel.cs" />
+    <Compile Include="Views\RadioCheckedToBoolConverter.cs" />
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -62,14 +67,25 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="KinectControl.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Models\CursorMapper\CursorMapper.cs" />
+    <Compile Include="Models\CursorControlInput\KinectBodyHelper.cs" />
+    <Compile Include="Models\KinectCursor.cs" />
+    <Compile Include="Models\CursorControlInput\KinectReader.cs" />
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\ParameterControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MouseControl.cs" />
+    <Compile Include="Models\CursorMapper\MapperStructs.cs" />
+    <Compile Include="Models\CursorControlOutput\MouseControl.cs" />
+    <Compile Include="Views\ParameterControl.xaml.cs">
+      <DependentUpon>ParameterControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
