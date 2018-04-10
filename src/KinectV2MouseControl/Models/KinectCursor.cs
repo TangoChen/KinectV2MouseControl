@@ -16,6 +16,8 @@ namespace KinectV2MouseControl
             MoveOnly,
             GripToPress,
             HoverToClick,
+            MoveGripPressing,
+            MoveLiftClicking
         }
 
         private ControlMode _mode = ControlMode.Disabled;
@@ -95,6 +97,8 @@ namespace KinectV2MouseControl
             }
         }
 
+        public double HandLiftYForPress { get; set; } = 0.02f;
+
         private MVector2 lastCursorPos = MVector2.Zero;
 
         /// <summary>
@@ -134,7 +138,7 @@ namespace KinectV2MouseControl
         {
             Body body = e.BodyData;
 
-            if (_mode == ControlMode.Disabled)
+            if (Mode == ControlMode.Disabled)
             {
                 return;
             }
@@ -147,8 +151,14 @@ namespace KinectV2MouseControl
                     if (usedHandIndex == -1)
                     {
                         usedHandIndex = i;
-                    }else if(usedHandIndex != i)
+                    } else if (usedHandIndex != i)
                     {
+                        // In two-hand control mode, non-used hand would be used for pressing/releasing mouse button.
+                        if (Mode == ControlMode.MoveGripPressing)
+                        {
+                            DoMouseControlByHandState(i, body.GetHandState(isLeft));
+                        } 
+
                         continue;
                     }
 
@@ -160,18 +170,7 @@ namespace KinectV2MouseControl
 
                     if (Mode == ControlMode.GripToPress)
                     {
-                        HandState handState = body.GetHandState(isLeft);
-                        if (handState == HandState.Closed)
-                        {
-                            if (!handGrips[i])
-                            {
-                                MouseControl.PressDown();
-                                handGrips[i] = true;
-                            }
-                        }else if(handState == HandState.Open && handGrips[i])
-                        {
-                            ReleaseGrip(i);
-                        }
+                        DoMouseControlByHandState(i, body.GetHandState(isLeft));
                     }
                     else if (Mode == ControlMode.HoverToClick)
                     {
@@ -190,14 +189,80 @@ namespace KinectV2MouseControl
                     {
                         // Reset to none.
                         usedHandIndex = NONE_USED;
+                        ReleaseGrip(i);
                     }
-
-                    ReleaseGrip(i);
+                    else  if (Mode == ControlMode.MoveLiftClicking)
+                    {
+                        DoMouseClickByHandLifting(i, body.GetHandRelativePosition(isLeft));
+                        //System.Diagnostics.Trace.WriteLine(body.GetHandRelativePosition(isLeft).Y);
+                    }
+                    else // Release mouse button when it's not regularly released, such as hand tracking lost.
+                    {
+                        ReleaseGrip(i);
+                    }
+                    
                 }
                 
             }
 
             ToggleHoverTimer(Mode == ControlMode.HoverToClick && usedHandIndex != -1);
+        }
+
+        private void DoMouseControlByHandState(int handIndex, HandState handState)
+        {
+            MouseControlState controlState;
+            switch (handState)
+            {
+                case HandState.Closed:
+                    controlState = MouseControlState.ShouldPress;
+                    break;
+                case HandState.Open:
+                    controlState = MouseControlState.ShouldRelease;
+                    break;
+                default:
+                    controlState = MouseControlState.None;
+                    break;
+            }
+            UpdateHandMouseControl(handIndex, controlState);
+        }
+
+        private void DoMouseClickByHandLifting(int handIndex, MVector2 handRelativePos)
+        {
+            // DoMouseControlByHandLifting(Including pressing/releasing):
+            //MouseControlState controlState = handRelativePos.Y > HandLiftYForPress ? MouseControlState.ShouldPress : MouseControlState.ShouldRelease;
+            //UpdateHandMouseControl(handIndex, controlState);
+            UpdateHandMouseControl(handIndex, handRelativePos.Y > HandLiftYForPress ? MouseControlState.ShouldClick : MouseControlState.ShouldRelease);
+        }
+
+        private enum MouseControlState
+        {
+            None,
+            ShouldPress,
+            ShouldRelease,
+            ShouldClick,
+        }
+
+        private void UpdateHandMouseControl(int handIndex, MouseControlState controlState)
+        {
+            if (controlState == MouseControlState.ShouldClick)
+            {
+                if (!handGrips[handIndex])
+                {
+                    MouseControl.Click();
+                    handGrips[handIndex] = true;
+                }
+            }else if (controlState == MouseControlState.ShouldPress)
+            {
+                if (!handGrips[handIndex])
+                {
+                    MouseControl.PressDown();
+                    handGrips[handIndex] = true;
+                }
+            }
+            else if (controlState == MouseControlState.ShouldRelease && handGrips[handIndex])
+            {
+                ReleaseGrip(handIndex);
+            }
         }
 
         private void ReleaseGrip(int index)
