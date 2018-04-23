@@ -5,21 +5,24 @@
   	Apr 10th, 2018: Added two-hand controls:
 	 * Move + grip pressing.
 	 * Move + lift clicking.
-I personlly don't think these control functions are intuitive or good-looking gestures. But they kind of solve cursor jittering when doing a grip gesture, in a quick doable way. Still fine if you are okay with them for your scenarios.
+
+	I personlly don't think these control functions are intuitive or good-looking gestures. But they kind of solve cursor jittering when doing a grip gesture, in a quick doable way. Still fine if you are okay with them for your scenarios.
   * ***v1.1***  
   	Feb 21th, 2018: An update after 3 years since first created. On usages and the looking, the app doesn't seem very different. Features are nearly just the same, but with a big structure change on the code side using MVVM pattern.  
     A small improvement on feature is, the cursor will keep following first tracked (lifting-forward) hand regardless of another hand lifting afterwards. Previously, it was set to only follow right hand when both hand are tracked.
 ---
 ### Features
 
-#### Control mode
+#### Control mode options
 * Disabled
 * Move only
 * Grip to press
 * Hover to click
-**[2-hand control: One hand for moving cursor, another for mouse button control.]**
-* Move + grip pressing 
-* Move + lift clicking
+* *Move + grip pressing* \*
+* *Move + lift clicking* \*
+
+*\* P.s. 2-hand control (One hand for moving cursor, another for mouse button control)*
+
 
 #### Adjustable parameters
 * Movement scale
