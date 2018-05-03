@@ -97,7 +97,7 @@ namespace KinectV2MouseControl
             }
         }
 
-        public double HandLiftYForPress { get; set; } = 0.02f;
+        public double HandLiftYForClick { get; set; } = 0.02f;
 
         private MVector2 lastCursorPos = MVector2.Zero;
 
@@ -228,10 +228,11 @@ namespace KinectV2MouseControl
 
         private void DoMouseClickByHandLifting(int handIndex, MVector2 handRelativePos)
         {
-            // DoMouseControlByHandLifting(Including pressing/releasing):
-            //MouseControlState controlState = handRelativePos.Y > HandLiftYForPress ? MouseControlState.ShouldPress : MouseControlState.ShouldRelease;
+            UpdateHandMouseControl(handIndex, handRelativePos.Y > HandLiftYForClick ? MouseControlState.ShouldClick : MouseControlState.ShouldRelease);
+            
+            //DoMouseControlByHandLifting(with press and releas rather than just a click):
+            //MouseControlState controlState = handRelativePos.Y > HandLiftYForClick ? MouseControlState.ShouldPress : MouseControlState.ShouldRelease;
             //UpdateHandMouseControl(handIndex, controlState);
-            UpdateHandMouseControl(handIndex, handRelativePos.Y > HandLiftYForPress ? MouseControlState.ShouldClick : MouseControlState.ShouldRelease);
         }
 
         private enum MouseControlState

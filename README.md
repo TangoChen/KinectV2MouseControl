@@ -1,6 +1,8 @@
 ## Kinect v2 Mouse Control
 
 ##### Updates:
+  * ***v1.2.1***  
+  	May 4th, 2018: Lock control with first tracked person so as to avoid cursor being influenced by other people.
   * ***v1.2***  
   	Apr 10th, 2018: Added two-hand controls:
 	 * Move + grip pressing.

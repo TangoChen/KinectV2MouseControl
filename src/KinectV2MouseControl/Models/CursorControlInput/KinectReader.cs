@@ -1,5 +1,6 @@
 ﻿using Microsoft.Kinect;
 using System;
+using System.Linq;
 
 namespace KinectV2MouseControl
 {
@@ -33,12 +34,14 @@ namespace KinectV2MouseControl
         /// </summary>
         Body[] bodies = null;
 
+        ulong usedTrackingId = 0;
+
         public KinectReader(bool openSensor = false)
         {
             sensor = KinectSensor.GetDefault();
             bodyFrameReader = sensor.BodyFrameSource.OpenReader();
             bodyFrameReader.FrameArrived += BodyFrameReader_FrameArrived;
-            
+
             if (openSensor)
             {
                 Open();
@@ -68,31 +71,41 @@ namespace KinectV2MouseControl
                 HandleBodyData();
             }
         }
-        
+
         private void HandleBodyData()
         {
-            //You can set up your own way to select tracked person in this function.
-            bool hasTrackedBody = false;
-            foreach (Body body in bodies)
-            {
-                // Skip untracked body.
-                if (body.IsTracked)
-                {
-                    hasTrackedBody = true;
-                    lostTrackingFrames = 0;
-                    if (OnTrackedBody != null)
-                    {
-                        OnTrackedBody.Invoke(this, new BodyEventArgs(body));
-                    }
+            /*
+             *  Use the first tracked body data for cursor controlling, until it loses tracking.
+             *  You can also make your own ways of selecting tracked person in this function.
+             */
 
-                    //Use first tracked body in list only.
-                    return;
+            bool hasTrackedBody = false;
+
+            if (usedTrackingId != 0)
+            {
+                Body trackedBody = bodies.FirstOrDefault<Body>(body => body.TrackingId == usedTrackingId);
+                if (trackedBody != null)
+                {
+                    GetTrackedBody(trackedBody);
+                    hasTrackedBody = true;
                 }
             }
-            
+            else
+            {
+                Body newBody = bodies.FirstOrDefault<Body>(body => body.IsTracked);
+                if (newBody != null)
+                {
+                    GetTrackedBody(newBody);
+                    usedTrackingId = newBody.TrackingId;
+                    hasTrackedBody = true;
+                }
+            }
+
+
             if (!hasTrackedBody && lostTrackingFrames != NO_LOST_FRAME_TRACK && ++lostTrackingFrames > MAX_LOST_TRACKING_FRAME_ALLOWED)
             {
                 lostTrackingFrames = NO_LOST_FRAME_TRACK;
+                usedTrackingId = 0;
                 if (OnLostTracking != null)
                 {
                     OnLostTracking.Invoke(this, EventArgs.Empty);
@@ -100,6 +113,18 @@ namespace KinectV2MouseControl
             }
         }
 
+        private void GetTrackedBody(Body body)
+        {
+            lostTrackingFrames = 0;
+            if (OnTrackedBody != null)
+            {
+                OnTrackedBody.Invoke(this, new BodyEventArgs(body));
+            }
+        }
+
+        /// <summary>
+        /// Open sensor.
+        /// </summary>
         public void Open()
         {
             if (sensor != null && !sensor.IsOpen)
@@ -108,6 +133,9 @@ namespace KinectV2MouseControl
             }
         }
 
+        /// <summary>
+        /// Close sensor.
+        /// </summary>
         public void Close()
         {
             if (sensor != null && sensor.IsOpen)
