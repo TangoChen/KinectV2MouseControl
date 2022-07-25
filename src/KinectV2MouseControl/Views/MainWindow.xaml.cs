@@ -19,6 +19,15 @@ namespace KinectV2MouseControl
             CursorViewModel.ResetToDefault();
         }
 
+        private void StartStopButton_Click(object sender, RoutedEventArgs e)
+        {
+            int Enable = CursorViewModel.Enable;
+            if (Enable == (int)KinectCursor.ControlMode.Disabled)
+               CursorViewModel.Enable = ~(int)KinectCursor.ControlMode.Disabled;
+            else
+               CursorViewModel.Enable = (int)KinectCursor.ControlMode.Disabled;
+        }
+
         private void Window_Closed(object sender, System.EventArgs e)
         {
             CursorViewModel.Quit();

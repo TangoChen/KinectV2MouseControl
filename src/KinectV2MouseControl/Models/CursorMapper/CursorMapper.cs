@@ -41,7 +41,7 @@ namespace KinectV2MouseControl
             }
         }
 
-        private double _moveScale = 1;
+        private double _moveScale = 1.0;
         public double MoveScale
         {
             get
@@ -84,15 +84,15 @@ namespace KinectV2MouseControl
             }
         }
 
-        private const double SMOOTH_MAX = 1;
-        private const double SMOOTH_MIN = 0;
+        private const double SMOOTH_MAX = 1.0;
+        private const double SMOOTH_MIN = 0.0;
 
         /*
          * Smoothing here is done by not moving cursor to exact target position but somewhere in between.
          * NewCursorPos = CurrentPos + (TargetPos - CurrentPos) * moveAmount;
          * moveAmount represents how much of the movement will be applied. e.g. 0.5 meaning the half way from current position to destination.
          */
-        double moveAmount = 1;
+        double moveAmount = 1.0;
         public double Smoothing
         {
             get
@@ -111,7 +111,7 @@ namespace KinectV2MouseControl
                     value = SMOOTH_MIN;
                 }
 
-                moveAmount = 1 - value;
+                moveAmount = 1.0 - value;
             }
         }
 
