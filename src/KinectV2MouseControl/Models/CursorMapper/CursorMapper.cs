@@ -1,4 +1,7 @@
-﻿using System;
+﻿//using System.Collections.Generic
+//using MathNet.Numerics.LinearAlgebra.Double;
+using System;
+using UnscentedKalmanFilter;
 
 namespace KinectV2MouseControl
 {
@@ -55,10 +58,10 @@ namespace KinectV2MouseControl
             }
         }
 
-        private MVector2 totalScale;
-        private MVector2 moveOffset;
+        private MVector2 totalScale = new MVector2( 1.0, 1.0 );
+        private MVector2 moveOffset = new MVector2( 1.0, 1.0 );
 
-        private MVector2 smoothedPosition;
+        private MVector2 smoothedPosition = new MVector2( 0.0, 0.0 );
 
         public enum ScaleAlignment
         {
@@ -115,17 +118,36 @@ namespace KinectV2MouseControl
             }
         }
 
-        public CursorMapper(MRect inputRect, MRect outputRect, ScaleAlignment scaleAlign = ScaleAlignment.None)
+        /* Kalman filters for X and Y positions */
+        UKF X_filter = new UKF();
+        UKF Y_filter = new UKF();
+
+        public CursorMapper(in MRect inputRect, in MRect outputRect, ScaleAlignment scaleAlign = ScaleAlignment.None)
         {
             ScaleAlign = scaleAlign;
             SetRects(inputRect, outputRect);
         }
 
-        public MVector2 GetOutputPosition(MVector2 inputPosition)
+        public MVector2 GetOutputPosition(in MVector2 inputPosition)
         {
             return _outputRect.Center + (inputPosition - _inputRect.Center) * totalScale + moveOffset;
         }
 
+        public MVector2 GetKalmanFilterOutputPosition(in MVector2 inputPosition)
+        {
+            var X_position = new[] { inputPosition.X };
+            var Y_position = new[] { inputPosition.Y };
+
+            X_filter.Update(X_position);
+            Y_filter.Update(Y_position);
+
+            MVector2 kalmanFilteredPosition;
+            kalmanFilteredPosition.X = X_filter.getState()[0];
+            kalmanFilteredPosition.Y = Y_filter.getState()[0];
+            return kalmanFilteredPosition;
+        }
+
+        private bool bEnableKalmanFilter = true;
         /// <summary>
         /// Get smoothed position.
         /// </summary>
@@ -135,13 +157,15 @@ namespace KinectV2MouseControl
         /// e.g. You can insert past time duration so the smoothing can be time-depended. And you may need to adjust Smoothing due to a big result change influenced by this value.
         /// </param>
         /// <returns></returns>
-        public MVector2 GetSmoothedOutputPosition(MVector2 inputPosition, double extraScale = 1)
+        public MVector2 GetSmoothedOutputPosition(in MVector2 inputPosition, double extraScale = 1)
         {
             smoothedPosition += (GetOutputPosition(inputPosition) - smoothedPosition) * moveAmount * extraScale;
+            if (bEnableKalmanFilter)
+               smoothedPosition = GetKalmanFilterOutputPosition(smoothedPosition);
             return smoothedPosition;
         }
 
-        public void SetRects(MRect inputRect, MRect outputRect)
+        public void SetRects(in MRect inputRect, in MRect  outputRect)
         {
             _inputRect = inputRect;
             _outputRect = outputRect;
@@ -150,8 +174,6 @@ namespace KinectV2MouseControl
 
         public void UpdateMapping()
         {
-            if (_scaleAlign == ScaleAlignment.None) return;
-
             double scaleX = OutputRect.DeltaX / InputRect.DeltaX;
             double scaleY = OutputRect.DeltaY / InputRect.DeltaY;
 

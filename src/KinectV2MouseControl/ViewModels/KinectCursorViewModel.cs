@@ -9,7 +9,7 @@ namespace KinectV2MouseControl
         KinectCursor kinectCursor;
 
         const double DEFAULT_MOVE_SCALE = 1.0;
-        const double DEFAULT_SMOOTHING = 0.7;
+        const double DEFAULT_SMOOTHING = 0.80;
         const double DEFAULT_HOVER_RANGE = 20.0;
         const double DEFAULT_HOVER_DURATION = 2.0;
         const double DEFAULT_FOREARM_RATIO_FOR_DEADZONE = 2.1;
@@ -118,6 +118,20 @@ namespace KinectV2MouseControl
             }
         }
 
+        int _Minimized = 0;
+        public int Minimized
+        {
+            get
+            {
+                return (int)_Minimized;
+            }
+            set
+            {
+                _Minimized = (int)value;
+                RaisePropertyChanged();
+            }
+        }
+
         public void LoadSettings()
         {
             MoveScale = Properties.Settings.Default.MoveScale;
@@ -128,6 +142,7 @@ namespace KinectV2MouseControl
 
             ControlModeIndex = Properties.Settings.Default.Mode;
             Enable = Properties.Settings.Default.Enable;
+            Minimized = Properties.Settings.Default.Minimized;
         }
 
         public void SaveSettings()
@@ -139,6 +154,7 @@ namespace KinectV2MouseControl
             Properties.Settings.Default.ForearmRatioForDeadzone = ForearmRatioForDeadzone;
             Properties.Settings.Default.Mode = ControlModeIndex;
             Properties.Settings.Default.Enable = Enable;
+            Properties.Settings.Default.Minimized = Minimized;
 
             Properties.Settings.Default.Save();
         }
@@ -150,7 +166,8 @@ namespace KinectV2MouseControl
             HoverRange = DEFAULT_HOVER_RANGE;
             HoverDuration = DEFAULT_HOVER_DURATION;
             ForearmRatioForDeadzone = DEFAULT_FOREARM_RATIO_FOR_DEADZONE;
-            Enable = 0;
+            Enable = 1;
+            Minimized = 0;
         }
 
         public void Quit()

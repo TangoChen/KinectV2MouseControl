@@ -70,7 +70,7 @@ namespace KinectV2MouseControl
             return false;
         }
 
-        public bool Equals(MVector2 other)
+        public bool Equals(in MVector2 other)
         {
             return (X == other.X) && (Y == other.Y);
         }
@@ -98,31 +98,31 @@ namespace KinectV2MouseControl
             }
         }
 
-        public static bool operator ==(MVector2 value1, MVector2 value2)
+        public static bool operator ==(in MVector2 value1, in MVector2 value2)
         {
             return value1.X == value2.X && value1.Y == value2.Y;
         }
 
-        public static bool operator !=(MVector2 value1, MVector2 value2)
+        public static bool operator !=(in MVector2 value1, in MVector2 value2)
         {
             return value1.X != value2.X || value1.Y != value2.Y;
         }
 
-        public static MVector2 operator -(MVector2 value1, MVector2 value2)
+        public static MVector2 operator -(MVector2 value1, in MVector2 value2)
         {
             value1.X -= value2.X;
             value1.Y -= value2.Y;
             return value1;
         }
 
-        public static MVector2 operator +(MVector2 value1, MVector2 value2)
+        public static MVector2 operator +(MVector2 value1, in MVector2 value2)
         {
             value1.X += value2.X;
             value1.Y += value2.Y;
             return value1;
         }
 
-        public static MVector2 operator *(MVector2 value1, MVector2 value2)
+        public static MVector2 operator *(MVector2 value1, in MVector2 value2)
         {
             value1.X *= value2.X;
             value1.Y *= value2.Y;
@@ -143,7 +143,7 @@ namespace KinectV2MouseControl
             return value;
         }
 
-        public static MVector2 operator /(MVector2 value1, MVector2 value2)
+        public static MVector2 operator /(MVector2 value1, in MVector2 value2)
         {
             value1.X /= value2.X;
             value1.Y /= value2.Y;

@@ -34,26 +34,10 @@ namespace KinectV2MouseControl.Properties {
                 this["Smoothing"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1.25")]
-        public double ForearmRatioForDeadzone
-        {
-            get
-            {
-                return ((double)(this["ForearmRatioForDeadzone"]));
-            }
-            set
-            {
-                this["ForearmRatioForDeadzone"] = value;
-            }
-        }
-
-
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("7")]
         public int Mode {
             get {
                 return ((int)(this["Mode"]));
@@ -62,22 +46,7 @@ namespace KinectV2MouseControl.Properties {
                 this["Mode"] = value;
             }
         }
-
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int Enable
-        {
-            get
-            {
-                return ((int)(this["Enable"]));
-            }
-            set
-            {
-                this["Enable"] = value;
-            }
-        }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
@@ -111,6 +80,45 @@ namespace KinectV2MouseControl.Properties {
             }
             set {
                 this["HoverDuration"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int Enable {
+            get {
+                return ((int)(this["Enable"]));
+            }
+            set {
+                this["Enable"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int Minimized
+        {
+            get
+            {
+                return ((int)(this["Minimized"]));
+            }
+            set
+            {
+                this["Minimized"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2.2")]
+        public double ForearmRatioForDeadzone {
+            get {
+                return ((double)(this["ForearmRatioForDeadzone"]));
+            }
+            set {
+                this["ForearmRatioForDeadzone"] = value;
             }
         }
     }

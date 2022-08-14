@@ -54,8 +54,6 @@ namespace KinectV2MouseControl
                 mouse_event(MouseEventFlag.RightUp, 0, 0, 0, UIntPtr.Zero);
             else if (upType == MouseEventFlag.MiddleDown)
                 mouse_event(MouseEventFlag.MiddleUp, 0, 0, 0, UIntPtr.Zero);
-
-
         }
 
         public static void Click(MouseEventFlag clickType =  MouseEventFlag.LeftDown)

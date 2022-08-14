@@ -1,0 +1,9 @@
+C:\GitHub\KinectV2MouseControl\src\UnscentedKalmanFilter\bin\Release\UnscentedKalmanFilter.dll
+C:\GitHub\KinectV2MouseControl\src\UnscentedKalmanFilter\bin\Release\UnscentedKalmanFilter.pdb
+C:\GitHub\KinectV2MouseControl\src\UnscentedKalmanFilter\bin\Release\MathNet.Numerics.dll
+C:\GitHub\KinectV2MouseControl\src\UnscentedKalmanFilter\bin\Release\MathNet.Numerics.xml
+C:\GitHub\KinectV2MouseControl\src\UnscentedKalmanFilter\obj\Release\UnscentedKalmanFilter.csproj.AssemblyReference.cache
+C:\GitHub\KinectV2MouseControl\src\UnscentedKalmanFilter\obj\Release\UnscentedKalmanFilter.csproj.CoreCompileInputs.cache
+C:\GitHub\KinectV2MouseControl\src\UnscentedKalmanFilter\obj\Release\UnscentedKalmanFilter.csproj.CopyComplete
+C:\GitHub\KinectV2MouseControl\src\UnscentedKalmanFilter\obj\Release\UnscentedKalmanFilter.dll
+C:\GitHub\KinectV2MouseControl\src\UnscentedKalmanFilter\obj\Release\UnscentedKalmanFilter.pdb
