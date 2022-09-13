@@ -52,6 +52,22 @@ namespace KinectV2MouseControl
             return distance;
         }
 
+        public static double GetDistanceBetweenHandTipAndThumb(this Body body, bool isLeft)
+        {
+            CameraSpacePoint handTipPos = body.Joints[isLeft ? JointType.HandTipLeft : JointType.HandTipRight].Position;
+            CameraSpacePoint thumbPos = body.Joints[isLeft ? JointType.ThumbLeft : JointType.ThumbRight].Position;
+            double distance = GetDistance(handTipPos, thumbPos);
+            return distance;
+        }
+
+        public static bool IsThumbClick(this Body body, bool isLeft)
+        {
+            double distance = GetDistanceBetweenHandTipAndThumb(body, isLeft);
+            if (distance <= 0.005)
+                return true;
+            return false;
+        }
+
         public static bool IsWristOutsideDeadzone(this Body body, bool isLeft)
         {
             /* calculate length of forearm */
@@ -98,6 +114,7 @@ namespace KinectV2MouseControl
 
             return handTipPos.ToMVector2() - shoulderBase.ToMVector2();
         }
+
 
         public static bool isXYplaneDiagonal(in CameraSpacePoint vectorParam)
         {
