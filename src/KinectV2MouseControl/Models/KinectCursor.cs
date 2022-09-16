@@ -368,18 +368,14 @@ namespace KinectV2MouseControl
                 {
                     if (controlState == MouseControlState.ShouldPress)
                     {
-                        if (isClick)
+                        if (!handGrips[handIndex])
                         {
-                            MouseControl.Click((MouseControl.MouseEventFlag)mouseEventFlag);
-                        }
-                        else
-                        {
-                            if (!handGrips[handIndex])
-                            {
+                            if (isClick)
+                                MouseControl.Click((MouseControl.MouseEventFlag)mouseEventFlag);
+                            else
                                 MouseControl.PressDown((MouseControl.MouseEventFlag)mouseEventFlag);
-                                mouseButtonPressed[handIndex] = mouseEventFlag;
-                                handGrips[handIndex] = true;
-                            }
+                            mouseButtonPressed[handIndex] = mouseEventFlag;
+                            handGrips[handIndex] = true;
                         }
                     }
                     else if (controlState == MouseControlState.ShouldRelease && handGrips[handIndex])
