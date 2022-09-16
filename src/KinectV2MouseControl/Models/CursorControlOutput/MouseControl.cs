@@ -18,32 +18,8 @@ namespace KinectV2MouseControl
     /// </summary>
     public static class MouseControl
     {
-        public static void PressDown()
-        {
-            mouse_event(MouseEventFlag.LeftDown, 0, 0, 0, UIntPtr.Zero);
-        }
-
-        public static void PressUp()
-        {
-            mouse_event(MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
-        }
-
-        public static void Click()
-        {
-            mouse_event(MouseEventFlag.LeftDown | MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
-        }
-        
-        public static bool MoveTo(double x, double y)
-        {
-            return SetCursorPos((int)x, (int)y);
-        }
-
-        [DllImport("user32.dll")]
-        private static extern bool SetCursorPos(int X, int Y);
-        [DllImport("user32.dll")]
-        private static extern void mouse_event(MouseEventFlag flags, int dx, int dy, uint data, UIntPtr extraInfo);
         [Flags]
-        enum MouseEventFlag : uint
+        public enum MouseEventFlag : uint
         {
             Move = 0x0001,
             LeftDown = 0x0002,
@@ -58,6 +34,48 @@ namespace KinectV2MouseControl
             VirtualDesk = 0x4000,
             Absolute = 0x8000
         }
+        public static void PressDown(MouseEventFlag downType = MouseEventFlag.LeftDown)
+        {
+            if ((downType == MouseEventFlag.LeftDown) ||
+                (downType == MouseEventFlag.RightDown) ||
+                (downType == MouseEventFlag.MiddleDown))
+                mouse_event(downType, 0, 0, 0, UIntPtr.Zero);
+        }
+
+        public static void PressUp(MouseEventFlag upType = MouseEventFlag.LeftUp)
+        {
+            if ((upType == MouseEventFlag.LeftUp) ||
+                (upType == MouseEventFlag.RightUp) ||
+                (upType == MouseEventFlag.MiddleUp))
+                mouse_event(upType, 0, 0, 0, UIntPtr.Zero);
+            else if (upType == MouseEventFlag.LeftDown)
+                mouse_event(MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
+            else if (upType == MouseEventFlag.RightDown)
+                mouse_event(MouseEventFlag.RightUp, 0, 0, 0, UIntPtr.Zero);
+            else if (upType == MouseEventFlag.MiddleDown)
+                mouse_event(MouseEventFlag.MiddleUp, 0, 0, 0, UIntPtr.Zero);
+        }
+
+        public static void Click(MouseEventFlag clickType =  MouseEventFlag.LeftDown)
+        {
+            if (clickType == MouseEventFlag.LeftDown)
+                mouse_event(MouseEventFlag.LeftDown | MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
+            else if (clickType == MouseEventFlag.RightDown)
+                mouse_event(MouseEventFlag.RightDown | MouseEventFlag.RightUp, 0, 0, 0, UIntPtr.Zero);
+            else if (clickType == MouseEventFlag.MiddleDown)
+                mouse_event(MouseEventFlag.MiddleDown | MouseEventFlag.MiddleUp, 0, 0, 0, UIntPtr.Zero);
+        }
+        
+        public static bool MoveTo(double x, double y)
+        {
+            return SetCursorPos((int)x, (int)y);
+        }
+
+        [DllImport("user32.dll")]
+        private static extern bool SetCursorPos(int X, int Y);
+        [DllImport("user32.dll")]
+        private static extern void mouse_event(MouseEventFlag flags, int dx, int dy, uint data, UIntPtr extraInfo);
+
 
 
         // GetCursorPos not used.

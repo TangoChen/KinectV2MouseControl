@@ -1,6 +1,32 @@
 ## Kinect v2 Mouse Control
 
 ##### Updates:
+	Sept 13, 2022
+	Modified for usability in seated position for flight simulators
+	
+	Added 2 additional ergonomic modes for cursor movement in seated position:
+		wrist relative to shoulder to reduce the number of joints involved
+		hand tip relative to shoulder which is more intuitive
+	Integrated unscented kalman filter from https://github.com/prozoroff/UKFSharp to smooth cursor movement and reduce jitter when still
+	
+	Click via pinching thumb and pointer finger (to reduce cusror jitter when clicking) where:
+		left mouse click is palm facing down (thumb is horizontal to hand)
+		right click is palm facing sideways (thumb is above hand)
+		middle click is palm facing diagonal
+		
+	Separate mouse down/mouse up via grabbing with thumb pointed outwards:
+		left mouse down is palm facing down (thumb is horizontal to hand)
+		right mouse down is palm facing sideways (thumb is above hand)
+		middle mouse down is palm facing diagonal
+		
+	Dead zone is measured from base of neck to be visible in a seated position.
+	The dead zone units are in terms of forearm length (elbow to wrist) which normally will not require calibration	
+	The default is set to allow a joystick and throttle to be placed on the armrests
+	
+	A universal stop gesture (double chop with both arms crossed at the wrist in an X) will stop the hand tracking
+	
+	It will also preserve its minimized stated between shutdown and startup
+
   * ***v1.2.1***  
   	May 4th, 2018: Lock control with first tracked person so as to avoid cursor being influenced by other people.
   * ***v1.2***  

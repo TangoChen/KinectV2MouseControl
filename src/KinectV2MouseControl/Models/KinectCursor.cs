@@ -3,12 +3,19 @@ using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Kinect;
 
+
 namespace KinectV2MouseControl
 {
     public class KinectCursor
     {
         private KinectReader sensorReader;
         private CursorMapper cursorMapper;
+
+        // public static double PI = 3.141592653589793;
+        // public static double degrees30toRads = 0.523598775598299; // PI * 30.0 / 180.0;
+        // public static double degrees60toRads = 1.047197551196598; // PI * 60.0 / 180.0;
+        public static double tan30degrees = 0.57735026919; // = Math.Tan(degrees30toRads);
+        public static double tan60degrees = 1.73205080757; // = Math.Tan(degrees60toRads);
 
         public enum ControlMode
         {
@@ -17,7 +24,9 @@ namespace KinectV2MouseControl
             GripToPress,
             HoverToClick,
             MoveGripPressing,
-            MoveLiftClicking
+            MoveLiftClicking,
+            LeftOrRightMouseDownAndUp_WristPosition,
+            LeftOrRightMouseDownAndUp_HandTipPosition
         }
 
         private ControlMode _mode = ControlMode.Disabled;
@@ -32,11 +41,35 @@ namespace KinectV2MouseControl
                 _mode = value;
                 if (value == ControlMode.Disabled)
                 {
+//                    ToggleHoverTimer(false);
+//                    sensorReader.Close();
+                }
+                else
+                {
+//                    sensorReader.Close();
+//                    sensorReader.Open();
+                }
+            }
+        }
+
+        private ControlMode _enable = ControlMode.Disabled;
+        public ControlMode Enable
+        {
+            get
+            {
+                return _enable;
+            }
+            set
+            {
+                _enable = value;
+                if (value == ControlMode.Disabled)
+                {
                     ToggleHoverTimer(false);
                     sensorReader.Close();
                 }
                 else
                 {
+                    sensorReader.Close();
                     sensorReader.Open();
                 }
             }
@@ -54,6 +87,18 @@ namespace KinectV2MouseControl
             }
         }
 
+        public double ForearmRatioForDeadzone
+        {
+            get
+            {
+                return KinectBodyHelper.ForearmRatioForDeadzone;
+            }
+            set
+            {
+                KinectBodyHelper.ForearmRatioForDeadzone = value;
+            }
+        }
+
         /// <summary>
         /// Rect value worked out by pointing to left, top, right, bottom spot with my hand as the ideal edges, and noting down the x, y values got from GetHandRelativePosition.
         /// This may only fit more for me, and you can test out your rect value. Approximately it works fine for most people.
@@ -63,6 +108,8 @@ namespace KinectV2MouseControl
         private bool[] handGrips = new bool[2] { false, false };
 
         private double _hoverDuration = 2;
+
+        private uint[] mouseButtonPressed = new uint[2] { (uint)MouseControl.MouseEventFlag.LeftDown, (uint)MouseControl.MouseEventFlag.LeftDown };
 
         /// <summary>
         /// Wait time for a hover gesture.
@@ -124,6 +171,8 @@ namespace KinectV2MouseControl
             sensorReader.OnLostTracking += Kinect_OnLostTracking;
             hoverTimer.Interval = TimeSpan.FromSeconds(HoverDuration);
             hoverTimer.Tick += new EventHandler(HoverTimer_Tick);
+
+
         }
 
         private void Kinect_OnLostTracking(object sender, EventArgs e)
@@ -142,30 +191,60 @@ namespace KinectV2MouseControl
             {
                 return;
             }
+            if (Enable == ControlMode.Disabled)
+            {
+                return;
+            }
+            if (body.IsStopGesture())
+            {
+                Enable = ControlMode.Disabled;
+            }
 
-            for(int i = 1; i >= 0; i--) // Starts looking from right hand.
+            for (int i = 1; i >= 0; i--) // Starts looking from right hand.
             {
                 bool isLeft = (i == 0);
-                if (body.IsHandLiftForward(isLeft))
+                if (body.IsWristOutsideDeadzone(isLeft))
                 {
                     if (usedHandIndex == -1)
                     {
                         usedHandIndex = i;
-                    } else if (usedHandIndex != i)
+                    }
+                    else if (usedHandIndex != i)
                     {
                         // In two-hand control mode, non-used hand would be used for pressing/releasing mouse button.
                         if (Mode == ControlMode.MoveGripPressing)
                         {
                             DoMouseControlByHandState(i, body.GetHandState(isLeft));
-                        } 
+                        }
 
                         continue;
                     }
 
-                    MVector2 handPos = body.GetHandRelativePosition(isLeft);
-                    MVector2 targetPos = cursorMapper.GetSmoothedOutputPosition(handPos);
-                    //System.Diagnostics.Trace.WriteLine(handPos.ToString());
+                    if ((Mode == ControlMode.LeftOrRightMouseDownAndUp_WristPosition) ||
+                        (Mode == ControlMode.LeftOrRightMouseDownAndUp_HandTipPosition))
+                    {
+                        MVector2 inputRect = body.GetWristRelativeRect(isLeft); // calculate XY distance boundary of elbow to wrist
+                        MRect InputRect = new MRect(-inputRect.X, -inputRect.Y, inputRect.X, inputRect.Y); // convert to MVector2 to MRect, only map wrist above elbow in Y axis to accomodate seated position
+                        cursorMapper.InputRect = InputRect; // set cursor XY input boundaries of active hand
+                        Console.WriteLine("inputRect=[ {0:F}, {1:F} ]", inputRect.X, inputRect.Y);
+                    }
 
+                    MVector2 targetPos;
+                    if (Mode == ControlMode.LeftOrRightMouseDownAndUp_HandTipPosition)
+                    {
+                        MVector2 handTipPos = body.GetHandTipRelativePosition(isLeft); // get XY plane vector from shoulder to hand tip                       handTipPos.Y = -handTipPos.Y; // invert Y coordinate to map from Kinect to screen coordinates
+                        handTipPos.Y = -handTipPos.Y; // invert Y coordinate to map from Kinect to screen coordinates
+                        targetPos = cursorMapper.GetSmoothedOutputPosition(handTipPos); // map handtip position in XY plane to screen coordinates
+                                                                                        //System.Diagnostics.Trace.WriteLine(wristPos.ToString());
+                    }
+                    else
+                    {
+                        MVector2 wristPos = body.GetWristRelativePosition(isLeft); // get XY plane vector from shoulder to wrist
+                        wristPos.Y = -wristPos.Y; // invert Y coordinate to map from Kinect to screen coordinates
+                        targetPos = cursorMapper.GetSmoothedOutputPosition(wristPos); // map wrist position in XY plane to screen coordinates
+                                                                                      //System.Diagnostics.Trace.WriteLine(wristPos.ToString());
+                    }
+                    Console.WriteLine("TargetPos=[ {0:F}, {1:F} ]", targetPos.X, targetPos.Y);
                     MouseControl.MoveTo(targetPos.X, targetPos.Y);
 
                     if (Mode == ControlMode.GripToPress)
@@ -182,33 +261,67 @@ namespace KinectV2MouseControl
 
                         lastCursorPos = targetPos;
                     }
+                    else if (Mode == ControlMode.LeftOrRightMouseDownAndUp_WristPosition)
+                    {
+                        bool isClick = body.IsThumbClick(isLeft);
+                        CameraSpacePoint thumbRelativePosition = body.GetThumbRelativePosition(isLeft);
+                        double XYplane_tangent = Math.Abs(thumbRelativePosition.Y) / Math.Abs(thumbRelativePosition.X);
+                        if (XYplane_tangent <= tan30degrees)
+                        {
+                            DoMouseControlByHandState(i, body.GetHandState(isLeft), (uint)MouseControl.MouseEventFlag.LeftDown, isClick); // thumb is horizontal, consider as finger over left mouse button
+                        }
+                        else if (XYplane_tangent >= tan60degrees)
+                        {
+                            DoMouseControlByHandState(i, body.GetHandState(isLeft), (uint)MouseControl.MouseEventFlag.RightDown, isClick); // thumb is vertical, consider as finger over right mouse button
+                        }
+                        else
+                        {
+                            DoMouseControlByHandState(i, body.GetHandState(isLeft), (uint)MouseControl.MouseEventFlag.MiddleDown, isClick); // thumb is diagnonal, consider as finger over middle mouse button
+                        }
+                    }
+                    else if (Mode == ControlMode.LeftOrRightMouseDownAndUp_HandTipPosition)
+                    {
+                        bool isClick = body.IsThumbClick(isLeft);
+                        CameraSpacePoint thumbRelativePosition = body.GetThumbRelativePosition(isLeft);
+                        double XYplane_tangent = Math.Abs(thumbRelativePosition.Y) / Math.Abs(thumbRelativePosition.X);
+                        if (XYplane_tangent <= tan30degrees)
+                        {
+                            DoMouseControlByHandState(i, body.GetHandState(isLeft), (uint)MouseControl.MouseEventFlag.LeftDown, isClick); // thumb is horizontal, consider as finger over left mouse button
+                        }
+                        else if (XYplane_tangent >= tan60degrees)
+                        {
+                            DoMouseControlByHandState(i, body.GetHandState(isLeft), (uint)MouseControl.MouseEventFlag.RightDown, isClick); // thumb is vertical, consider as finger over right mouse button
+                        }
+                        else
+                        {
+                            DoMouseControlByHandState(i, body.GetHandState(isLeft), (uint)MouseControl.MouseEventFlag.MiddleDown, isClick); // thumb is diagnonal, consider as finger over middle mouse button
+                        }
+                    }
                 }
                 else
                 {
-                    if(usedHandIndex == i)
+                    if (usedHandIndex == i)
                     {
                         // Reset to none.
                         usedHandIndex = NONE_USED;
                         ReleaseGrip(i);
                     }
-                    else  if (Mode == ControlMode.MoveLiftClicking)
+                    else if (Mode == ControlMode.MoveLiftClicking)
                     {
-                        DoMouseClickByHandLifting(i, body.GetHandRelativePosition(isLeft));
+                        DoMouseClickByHandLifting(i, body.GetWristRelativePosition(isLeft));
                         //System.Diagnostics.Trace.WriteLine(body.GetHandRelativePosition(isLeft).Y);
                     }
                     else // Release mouse button when it's not regularly released, such as hand tracking lost.
                     {
                         ReleaseGrip(i);
                     }
-                    
                 }
-                
             }
 
             ToggleHoverTimer(Mode == ControlMode.HoverToClick && usedHandIndex != -1);
         }
 
-        private void DoMouseControlByHandState(int handIndex, HandState handState)
+        private void DoMouseControlByHandState(int handIndex, HandState handState, uint mouseEventFlag = (uint)MouseControl.MouseEventFlag.LeftDown, bool isClick = false)
         {
             MouseControlState controlState;
             switch (handState)
@@ -223,10 +336,10 @@ namespace KinectV2MouseControl
                     controlState = MouseControlState.None;
                     break;
             }
-            UpdateHandMouseControl(handIndex, controlState);
+            UpdateHandMouseControl(handIndex, controlState, mouseEventFlag, isClick);
         }
 
-        private void DoMouseClickByHandLifting(int handIndex, MVector2 handRelativePos)
+        private void DoMouseClickByHandLifting(int handIndex, in MVector2 handRelativePos)
         {
             UpdateHandMouseControl(handIndex, handRelativePos.Y > HandLiftYForClick ? MouseControlState.ShouldClick : MouseControlState.ShouldRelease);
             
@@ -243,9 +356,36 @@ namespace KinectV2MouseControl
             ShouldClick,
         }
 
-        private void UpdateHandMouseControl(int handIndex, MouseControlState controlState)
+       
+        private void UpdateHandMouseControl(int handIndex, MouseControlState controlState, uint mouseEventFlag = (uint)MouseControl.MouseEventFlag.LeftDown, bool isClick = false)
         {
-            if (controlState == MouseControlState.ShouldClick)
+            if ((Mode == ControlMode.LeftOrRightMouseDownAndUp_WristPosition) ||
+                (Mode == ControlMode.LeftOrRightMouseDownAndUp_HandTipPosition))
+            {
+                if ((mouseEventFlag == (uint)MouseControl.MouseEventFlag.LeftDown) ||
+                    (mouseEventFlag == (uint)MouseControl.MouseEventFlag.RightDown) ||
+                    (mouseEventFlag == (uint)MouseControl.MouseEventFlag.MiddleDown))
+                {
+                    if (controlState == MouseControlState.ShouldPress)
+                    {
+                        if (!handGrips[handIndex])
+                        {
+                            if (isClick)
+                                MouseControl.Click((MouseControl.MouseEventFlag)mouseEventFlag);
+                            else
+                                MouseControl.PressDown((MouseControl.MouseEventFlag)mouseEventFlag);
+                            mouseButtonPressed[handIndex] = mouseEventFlag;
+                            handGrips[handIndex] = true;
+                        }
+                    }
+                    else if (controlState == MouseControlState.ShouldRelease && handGrips[handIndex])
+                    {
+                        ReleaseGrip(handIndex);
+                        handGrips[handIndex] = false;
+                    }
+                }
+            }
+            else if (controlState == MouseControlState.ShouldClick)
             {
                 if (!handGrips[handIndex])
                 {
@@ -263,15 +403,26 @@ namespace KinectV2MouseControl
             else if (controlState == MouseControlState.ShouldRelease && handGrips[handIndex])
             {
                 ReleaseGrip(handIndex);
+                handGrips[handIndex] = false;
             }
         }
 
-        private void ReleaseGrip(int index)
+        private void ReleaseGrip(int handIndex)
         {
-            if (handGrips[index])
+            if ((Mode == ControlMode.LeftOrRightMouseDownAndUp_WristPosition) ||
+                (Mode == ControlMode.LeftOrRightMouseDownAndUp_HandTipPosition))
+
+            {
+                /* check if mouse button was pressed */
+               if (handGrips[handIndex])
+               {
+                    MouseControl.Click((MouseControl.MouseEventFlag)mouseButtonPressed[handIndex]);
+                    MouseControl.PressUp((MouseControl.MouseEventFlag)mouseButtonPressed[handIndex]);
+               }
+            }
+            else if (handGrips[handIndex])
             {
                 MouseControl.PressUp();
-                handGrips[index] = false;
             }
         }
 
